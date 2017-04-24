@@ -2,11 +2,9 @@ package it.angelobabini.calcifer;
 
 import javax.servlet.annotation.WebServlet;
 
-import it.angelobabini.calcifer.samples.MainScreen;
-import it.angelobabini.calcifer.samples.authentication.AccessControl;
-import it.angelobabini.calcifer.samples.authentication.BasicAccessControl;
-import it.angelobabini.calcifer.samples.authentication.LoginScreen;
-import it.angelobabini.calcifer.samples.authentication.LoginScreen.LoginListener;
+import it.angelobabini.calcifer.LoginScreen.LoginListener;
+import it.angelobabini.calcifer.authentication.AccessControl;
+import it.angelobabini.calcifer.authentication.BasicAccessControl;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
@@ -27,11 +25,11 @@ import com.vaadin.ui.themes.ValoTheme;
  * layouts.
  */
 @Viewport("user-scalable=no,initial-scale=1.0")
-@Theme("CalciferTheme")
+@Theme("calcifer")
 @Widgetset("it.angelobabini.calcifer.CalciferWidgetset")
 public class CalciferUI extends UI {
-
-    private AccessControl accessControl = new BasicAccessControl();
+	private static final long serialVersionUID = -6645021520794103645L;
+	private AccessControl accessControl = new BasicAccessControl();
 
     @Override
     protected void init(VaadinRequest vaadinRequest) {
@@ -40,7 +38,9 @@ public class CalciferUI extends UI {
         getPage().setTitle("Calcifer");
         if (!accessControl.isUserSignedIn()) {
             setContent(new LoginScreen(accessControl, new LoginListener() {
-                @Override
+				private static final long serialVersionUID = 6961525843786200182L;
+
+				@Override
                 public void loginSuccessful() {
                     showMainView();
                 }
@@ -67,5 +67,6 @@ public class CalciferUI extends UI {
     @WebServlet(urlPatterns = "/*", name = "CalciferUIServlet", asyncSupported = true)
     @VaadinServletConfiguration(ui = CalciferUI.class, productionMode = false)
     public static class CalciferUIServlet extends VaadinServlet {
+		private static final long serialVersionUID = 6045924633742041509L;
     }
 }

@@ -4,7 +4,6 @@ import it.angelobabini.calcifer.CalciferUI;
 import it.angelobabini.calcifer.samples.backend.DataService;
 import it.angelobabini.calcifer.samples.backend.data.Product;
 
-import java.io.Serializable;
 import com.vaadin.server.Page;
 
 /**
@@ -16,7 +15,7 @@ import com.vaadin.server.Page;
  * the system separately, and to e.g. provide alternative views for the same
  * data.
  */
-public class SampleCrudLogic implements Serializable {
+public class SampleCrudLogic {
 
     private SampleCrudView view;
 
@@ -52,8 +51,7 @@ public class SampleCrudLogic implements Serializable {
         }
 
         Page page = CalciferUI.get().getPage();
-        page.setUriFragment("!" + SampleCrudView.VIEW_NAME + "/"
-                + fragmentParameter, false);
+        page.setUriFragment("!" + SampleCrudView.VIEW_NAME + "/" + fragmentParameter, false);
     }
 
     public void enter(String productId) {
@@ -78,8 +76,7 @@ public class SampleCrudLogic implements Serializable {
     }
 
     public void saveProduct(Product product) {
-        view.showSaveNotification(product.getProductName() + " ("
-                + product.getId() + ") updated");
+        view.showSaveNotification(product.getProductName() + " (" + product.getId() + ") updated");
         view.clearSelection();
         view.editProduct(null);
         view.refreshProduct(product);
@@ -88,8 +85,7 @@ public class SampleCrudLogic implements Serializable {
 
     public void deleteProduct(Product product) {
         DataService.get().deleteProduct(product.getId());
-        view.showSaveNotification(product.getProductName() + " ("
-                + product.getId() + ") removed");
+        view.showSaveNotification(product.getProductName() + " (" + product.getId() + ") removed");
 
         view.clearSelection();
         view.editProduct(null);

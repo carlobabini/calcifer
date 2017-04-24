@@ -123,8 +123,7 @@ public class ProductForm extends ProductFormDesign {
 
         // Scroll to the top
         // As this is not a Panel, using JavaScript
-        String scrollScript = "window.document.getElementById('" + getId()
-                + "').scrollTop = 0;";
+        String scrollScript = "window.document.getElementById('" + getId() + "').scrollTop = 0;";
         Page.getCurrent().getJavaScript().execute(scrollScript);
     }
 

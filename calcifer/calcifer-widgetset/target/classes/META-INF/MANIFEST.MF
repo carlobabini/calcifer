@@ -1,7 +1,0 @@
-Manifest-Version: 1.0
-Vaadin-Widgetsets: it.angelobabini.calcifer.CalciferWidgetset
-Vaadin-Package-Version: 1
-Built-By: cbabini
-Build-Jdk: 1.8.0_111
-Created-By: Maven Integration for Eclipse
-

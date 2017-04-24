@@ -11,8 +11,9 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
 public class AboutView extends VerticalLayout implements View {
-
-    public static final String VIEW_NAME = "About";
+	private static final long serialVersionUID = -9080017889440813638L;
+	
+	public static final String VIEW_NAME = "About";
 
     public AboutView() {
         CustomLayout aboutContent = new CustomLayout("aboutview");
@@ -22,7 +23,7 @@ public class AboutView extends VerticalLayout implements View {
         // layout
         aboutContent.addComponent(
                 new Label(FontAwesome.INFO_CIRCLE.getHtml()
-                        + " This application is using Vaadin "
+                        + " Calcifer is using Vaadin "
                         + Version.getFullVersion(), ContentMode.HTML), "info");
 
         setSizeFull();
