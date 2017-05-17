@@ -5,6 +5,7 @@ import it.angelobabini.calcifer.admin.AdminView;
 import it.angelobabini.calcifer.samples.about.AboutView;
 import it.angelobabini.calcifer.samples.crud.SampleCrudView;
 import it.angelobabini.calcifer.stf.RicognizioniView;
+import it.angelobabini.calcifer.stf.RicognizioniViewOLD;
 
 import com.vaadin.navigator.Navigator;
 import com.vaadin.navigator.ViewChangeListener;
@@ -34,11 +35,12 @@ public class MainScreen extends HorizontalLayout {
         menu = new Menu(navigator);
         
         //TODO generazione automatica delle voci di menu leggendo da DB
-        menu.addView(new RicognizioniView(), RicognizioniView.VIEW_NAME, RicognizioniView.VIEW_NAME, FontAwesome.ARROWS_ALT);
-        //menu.addView(new AdminView(), AdminView.VIEW_NAME, AdminView.VIEW_NAME, FontAwesome.USER);
-        //navigator.addView(AdminUserView.VIEW_NAME, new AdminUserView());
-        if (CalciferUI.get().getAccessControl().isUserInRole("admin"))
-        	menu.addView(new SampleCrudView(), SampleCrudView.VIEW_NAME, SampleCrudView.VIEW_NAME, FontAwesome.EDIT);
+        menu.addView(new RicognizioniView(), RicognizioniView.VIEW_NAME, RicognizioniViewOLD.VIEW_NAME, FontAwesome.ARROWS_ALT);
+        if (CalciferUI.get().getAccessControl().isUserInRole("admin")) {
+        	//menu.addView(new AdminView(), AdminView.VIEW_NAME, AdminView.VIEW_NAME, FontAwesome.USER);
+        	//navigator.addView(AdminUserView.VIEW_NAME, new AdminUserView());
+        	//menu.addView(new SampleCrudView(), SampleCrudView.VIEW_NAME, SampleCrudView.VIEW_NAME, FontAwesome.EDIT);
+    	}
         menu.addView(new AboutView(), AboutView.VIEW_NAME, AboutView.VIEW_NAME, FontAwesome.INFO_CIRCLE);
 
         navigator.addViewChangeListener(viewChangeListener);

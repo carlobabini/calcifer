@@ -13,12 +13,12 @@ import com.vaadin.data.util.sqlcontainer.SQLContainer;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.renderers.ClickableRenderer.RendererClickEvent;
 
-public class RicognizioneGrid extends Grid {
+public class RicognizioneGridOLD extends Grid {
 	private static final long serialVersionUID = -7472060043692841054L;
 	
 	private final GridCellFilter filter;
 
-	public RicognizioneGrid() {
+	public RicognizioneGridOLD() {
         setSizeFull();
 
         setSelectionMode(SelectionMode.SINGLE);
@@ -28,8 +28,12 @@ public class RicognizioneGrid extends Grid {
 		filter = new GridCellFilter(this);
 	}
 	
-	public void initGrid() {	
-		getColumn("inizio").setHeaderCaption("Inizio");
+	public void initGrid() {
+		for(Column c : getColumns()) {
+			c.setHidable(true);
+		}
+		
+		getColumn("inizio").setHeaderCaption("Inizio").setHidable(false);
 		
 		getColumn("fine").setHeaderCaption("Fine");
 		
@@ -60,7 +64,7 @@ public class RicognizioneGrid extends Grid {
 		getColumn("indirizzo").setHeaderCaption("Indirizzo");
 		filter.setTextFilter("indirizzo", true, false);
 		
-		getColumn("accesso").setHeaderCaption("Accesso");
+		getColumn("accesso").setHeaderCaption("Accesso").setHidable(true);
 		filter.setTextFilter("accesso", true, false);
 		
 		getColumn("posizione_contrassegno").setHeaderCaption("Posizione");
@@ -98,7 +102,8 @@ public class RicognizioneGrid extends Grid {
 
 			@Override
 			public void onEdit(RendererClickEvent event) {
-				editItem(event.getItemId());
+				System.out.println(event.getItemId().getClass() + " - "+event.getItemId());
+				//editItem(event.getItemId());
 			}
 
 			@Override

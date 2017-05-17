@@ -2,6 +2,8 @@ package it.angelobabini.calcifer.stf.backend.data;
 
 import it.angelobabini.calcifer.backend.DBHelper;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -51,11 +53,27 @@ public class StfDAO {
 
 			@SuppressWarnings("unchecked")
 			List<Ricognizione> list = q.getResultList();
-			entityManager.close();
 			if(list.size() == 1)
 				ricognizione = list.get(0);
 
 			return ricognizione;
+		} finally {
+			DBHelper.closeEntityManager(entityManager);
+		}
+	}
+
+	public static boolean insertRicognizione(Ricognizione ricognizione) {
+		EntityManager entityManager = null;
+
+		try {
+			entityManager = DBHelper.getEntityManager();
+			entityManager.getTransaction().begin();
+			entityManager.persist(ricognizione);
+			entityManager.getTransaction().commit();
+			return true;
+		} catch(Exception e) {
+			e.printStackTrace();
+			return false;
 		} finally {
 			DBHelper.closeEntityManager(entityManager);
 		}
@@ -67,16 +85,85 @@ public class StfDAO {
 		try {
 			entityManager = DBHelper.getEntityManager();
 			entityManager.getTransaction().begin();
-			entityManager.persist(ricognizione);
+			entityManager.merge(ricognizione);
 			entityManager.getTransaction().commit();
-			entityManager.close();
 			return true;
 		} catch(Exception e) {
-			DBHelper.rollback(entityManager);
 			e.printStackTrace();
 			return false;
 		} finally {
 			DBHelper.closeEntityManager(entityManager);
 		}
+	}
+	
+	public static List<String> operatoriList() {
+		EntityManager entityManager = null;
+
+		try {
+			entityManager = DBHelper.getEntityManager();
+
+			Query q = entityManager.createQuery("SELECT distinct e.operatore FROM ricognizioni e");
+
+			@SuppressWarnings("unchecked")
+			List<String> list = q.getResultList();
+
+			return list;
+		} finally {
+			DBHelper.closeEntityManager(entityManager);
+		}
+	}
+	
+	public static boolean saveRicognizioneLog(Ricognizione ricognizione, String username, String azione) throws Exception {
+		Connection conn = null;
+		PreparedStatement statement = null;
+		try {
+			conn = DBHelper.getConnection();
+			String sql = "insert into ricognizioni_log select current_timestamp as ts, ? as username, ? as azione, r.* from ricognizioni as r where instanceID = ?";
+			statement = conn.prepareStatement(sql);
+			statement.setString(1, username);
+			statement.setString(2, azione);
+			statement.setString(3, ricognizione.getInstanceID());
+			return statement.execute();
+		} finally {
+			try {
+				statement.close();
+			} catch(Exception e) { }
+			try {
+				conn.close();
+			} catch(Exception e) { }
+		}
+		/*EntityManager entityManager = null;
+
+		try {
+			entityManager = DBHelper.getEntityManager();
+			entityManager.getTransaction().getconn
+		} finally {
+			DBHelper.closeEntityManager(entityManager);
+		}
+		INSERT INTO ricognizioni_log(
+	            ts, utente, azione, inizio, fine, operatore, id, id_in_altre_reti, 
+	            id_caposaldo_principale, latitude, longitude, altitude, accuracy, 
+	            ubicazione, indirizzo, accesso, posizione_contrassegno, materializzazione, 
+	            contrassegno_ancorato, contrassegno_danneggiato, descrizione_danneggiamento, 
+	            tipologia_fondazione, anomalie_manufatto, descrizione_anomalie, 
+	            note_rilevanti, descr_note_rilevanti, altre_note_rilevanti, tipo, 
+	            altro_tipo, foto_manufatto, foto_panoramica, instanceid, modifica, 
+	            appartenenza, punto, affidabilita, esistente, stato_scomparso, 
+	            note_scomparso, altre_scomparso, necessita_ripristino, descrizione_ripristino, 
+	            latitude_ripristino, longitude_ripristino, altitude_ripristino, 
+	            accuracy_ripristino, foto_sito_ripristino, foto_aggiornata, foto_danno_contrassegno, 
+	            foto_danno_manufatto)
+	    VALUES (?, ?, ?, ?, ?, ?, ?, ?, 
+	            ?, ?, ?, ?, ?, 
+	            ?, ?, ?, ?, ?, 
+	            ?, ?, ?, 
+	            ?, ?, ?, 
+	            ?, ?, ?, ?, 
+	            ?, ?, ?, ?, ?, 
+	            ?, ?, ?, ?, ?, 
+	            ?, ?, ?, ?, 
+	            ?, ?, ?, 
+	            ?, ?, ?, ?, 
+	            ?);*/
 	}
 }

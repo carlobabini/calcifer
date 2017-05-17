@@ -30,6 +30,8 @@ import com.vaadin.ui.themes.ValoTheme;
 public class CalciferUI extends UI {
 	private static final long serialVersionUID = -6645021520794103645L;
 	private AccessControl accessControl = new BasicAccessControl();
+	
+	public static final String PERSISTENCE_UNIT_NAME = "calcifer-backend";
 
     @Override
     protected void init(VaadinRequest vaadinRequest) {

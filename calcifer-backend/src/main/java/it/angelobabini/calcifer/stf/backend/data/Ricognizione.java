@@ -152,7 +152,7 @@ public class Ricognizione implements Serializable {
 	private String foto_danno_contrassegno; 
 
 	@Column(name = "foto_danno_manufatto", length = 100, nullable = false)
-	private String foto_danno_manufatto; 
+	private String foto_danno_manufatto;
 	
 	public Timestamp getInizio() {
 		return inizio;

@@ -5,16 +5,16 @@ import it.angelobabini.calcifer.stf.backend.data.Ricognizione;
 
 import com.vaadin.server.Page;
 
-public class RicognizioniLogic {
+public class RicognizioniLogicOLD {
 
-    private RicognizioniView view;
+    private RicognizioniViewOLD view;
 
-    public RicognizioniLogic(RicognizioniView ricognizioniView) {
+    public RicognizioniLogicOLD(RicognizioniViewOLD ricognizioniView) {
         view = ricognizioniView;
     }
     
     public void init() {
-        editRicognizione(null);
+        //editRicognizione(null);
         // Hide and disable if not admin
         /*if (!CalciferUI.get().getAccessControl().isUserInRole("admin")) {
             view.setNewProductEnabled(false);
@@ -35,14 +35,14 @@ public class RicognizioniLogic {
         }
 
         Page page = CalciferUI.get().getPage();
-        page.setUriFragment("!" + RicognizioniView.VIEW_NAME + "/"
+        page.setUriFragment("!" + RicognizioniViewOLD.VIEW_NAME + "/"
                 + fragmentParameter, false);
     }
 
     public void enter(String ricognizioneId) {
         if (ricognizioneId != null && !ricognizioneId.isEmpty()) {
             if (ricognizioneId.equals("new")) {
-                newRicognizione();
+                //newRicognizione();
             } else {
                 // Ensure this is selected even if coming directly here from
                 // login
@@ -84,7 +84,7 @@ public class RicognizioniLogic {
         setFragmentParameter("");*/
     }
 
-    public void editRicognizione(Ricognizione ricognizione) {
+    /*public void editRicognizione(Ricognizione ricognizione) {
         if (ricognizione == null) {
             setFragmentParameter("");
         } else {
@@ -103,5 +103,5 @@ public class RicognizioniLogic {
         if (CalciferUI.get().getAccessControl().isUserInRole("admin")) {
             view.editRicognizione(ricognizione);
         }
-    }
+    }*/
 }

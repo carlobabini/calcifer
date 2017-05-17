@@ -31,8 +31,8 @@ public class AdminUserForm extends FormLayout {
 	private final TextField email = new TextField("Email");
 	private final ComboBox role = new ComboBox("Ruolo");
 	private final PasswordField password = new PasswordField("Password");
-	private final PasswordField passwordChangeField = new PasswordField("Nuova password");
-	private final PasswordField passwordCheckField = new PasswordField("Verifica nuova password");
+	//private final PasswordField passwordChangeField = new PasswordField("Nuova password");
+	//private final PasswordField passwordCheckField = new PasswordField("Verifica nuova password");
 	private final Button saveButton = new Button("Salva");
 	private final Button cancelButton = new Button("Annulla");
 	private final Button deleteButton = new Button("Elimina");
@@ -47,8 +47,8 @@ public class AdminUserForm extends FormLayout {
 		addComponent(email);
 		addComponent(role);
 		addComponent(password);
-		addComponent(passwordChangeField);
-		addComponent(passwordCheckField);
+		//addComponent(passwordChangeField);
+		//addComponent(passwordCheckField);
 		addComponent(saveButton);
 		addComponent(cancelButton);
 		addComponent(deleteButton);
@@ -68,9 +68,9 @@ public class AdminUserForm extends FormLayout {
             f.addValueChangeListener(valueListener);
         }
         
-		password.setVisible(false);
-        passwordChangeField.removeValueChangeListener(valueListener);
-        passwordCheckField.removeValueChangeListener(valueListener);
+		//password.setVisible(false);
+		//passwordChangeField.removeValueChangeListener(valueListener);
+        //passwordCheckField.removeValueChangeListener(valueListener);
         
         fieldGroup.addCommitHandler(new CommitHandler() {
 			private static final long serialVersionUID = -1644129073621632116L;
@@ -96,6 +96,7 @@ public class AdminUserForm extends FormLayout {
                     Notification n = new Notification("Please re-check the fields", Type.ERROR_MESSAGE);
                     n.setDelayMsec(500);
                     n.show(getUI().getPage());
+                    e.printStackTrace();
                 }
             }
         });

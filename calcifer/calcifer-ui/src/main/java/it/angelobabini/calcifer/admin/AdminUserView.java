@@ -1,5 +1,6 @@
 package it.angelobabini.calcifer.admin;
 
+import it.angelobabini.calcifer.CalciferUI;
 import it.angelobabini.calcifer.backend.CRUDLogic;
 import it.angelobabini.calcifer.backend.Utente;
 
@@ -46,10 +47,12 @@ public class AdminUserView extends CssLayout implements View, CRUDLogic<Utente> 
 
 			@Override
 			public void select(SelectionEvent event) {
-				//viewLogic.rowSelected(grid.getSelectedRow());
-				System.out.println(String.valueOf(grid.getSelectedRow()));
-				System.out.println(utenteContainer.getItem(grid.getSelectedRow()));
-				editEntity((Utente)grid.getSelectedRow());
+				Object r = grid.getSelectedRow();
+				if(r != null) {
+					Utente u = utenteContainer.getItem(r).getEntity();
+					if(u != null)
+						editEntity(u);
+				}
 			}
 		});
 
@@ -92,7 +95,7 @@ public class AdminUserView extends CssLayout implements View, CRUDLogic<Utente> 
 	@Override
 	public void enter(ViewChangeEvent event) {
 		if(utenteContainer == null) {
-			utenteContainer = JPAContainerFactory.make(Utente.class, "calcifer-backend");
+			utenteContainer = JPAContainerFactory.make(Utente.class, CalciferUI.PERSISTENCE_UNIT_NAME);
 			grid.setContainerDataSource(utenteContainer);
 			grid.setSizeFull();
 			grid.setEditorEnabled(false);
@@ -154,7 +157,7 @@ public class AdminUserView extends CssLayout implements View, CRUDLogic<Utente> 
 	@Override
 	public void saveEntity(Utente t) {
 		refresh(t);
-		grid.scrollTo(t);
+		grid.scrollTo(t.getUsername());
 	}
 
 	@Override
