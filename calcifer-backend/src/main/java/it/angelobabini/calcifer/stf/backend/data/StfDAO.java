@@ -14,7 +14,7 @@ public class StfDAO {
 	public static List<String> getRicognzioneUUIDs() {
 		EntityManager entityManager = null;
 		try {
-			entityManager = DBHelper.getEntityManager();
+			entityManager = DBHelper.instance().getEntityManager();
 			Query q = entityManager.createQuery("SELECT e.instanceID FROM ricognizioni e");
 			@SuppressWarnings("unchecked")
 			List<String> list = q.getResultList();
@@ -45,7 +45,7 @@ public class StfDAO {
 		EntityManager entityManager = null;
 
 		try {
-			entityManager = DBHelper.getEntityManager();
+			entityManager = DBHelper.instance().getEntityManager();
 			Ricognizione ricognizione = null;
 
 			Query q = entityManager.createQuery("SELECT e FROM ricognizioni e WHERE instanceid = :instanceid");
@@ -66,7 +66,7 @@ public class StfDAO {
 		EntityManager entityManager = null;
 
 		try {
-			entityManager = DBHelper.getEntityManager();
+			entityManager = DBHelper.instance().getEntityManager();
 			entityManager.getTransaction().begin();
 			entityManager.persist(ricognizione);
 			entityManager.getTransaction().commit();
@@ -83,9 +83,26 @@ public class StfDAO {
 		EntityManager entityManager = null;
 
 		try {
-			entityManager = DBHelper.getEntityManager();
+			entityManager = DBHelper.instance().getEntityManager();
 			entityManager.getTransaction().begin();
-			entityManager.merge(ricognizione);
+			if(!entityManager.contains(ricognizione))
+				entityManager.merge(ricognizione);
+			Capisaldo capisaldo = getCapisaldoByID(ricognizione.getId());
+			if(capisaldo == null) {
+				capisaldo = createCapisaldo(ricognizione);
+				entityManager.merge(capisaldo);
+			}
+			boolean found = false;
+			for(Ricognizione r : capisaldo.getRicognizioniList()) {
+				if(r.getInstanceID().equals(ricognizione.getInstanceID())) {
+					found = true;
+					break;
+				}
+			}
+			if(!found) {
+				capisaldo.getRicognizioniList().add(ricognizione);
+			}
+			
 			entityManager.getTransaction().commit();
 			return true;
 		} catch(Exception e) {
@@ -100,7 +117,7 @@ public class StfDAO {
 		EntityManager entityManager = null;
 
 		try {
-			entityManager = DBHelper.getEntityManager();
+			entityManager = DBHelper.instance().getEntityManager();
 
 			Query q = entityManager.createQuery("SELECT distinct e.operatore FROM ricognizioni e");
 
@@ -135,10 +152,10 @@ public class StfDAO {
 		/*EntityManager entityManager = null;
 
 		try {
-			entityManager = DBHelper.getEntityManager();
+			//entityManager = DBHelper.getEntityManager();
 			entityManager.getTransaction().getconn
 		} finally {
-			DBHelper.closeEntityManager(entityManager);
+			//DBHelper.closeEntityManager(entityManager);
 		}
 		INSERT INTO ricognizioni_log(
 	            ts, utente, azione, inizio, fine, operatore, id, id_in_altre_reti, 
@@ -165,5 +182,66 @@ public class StfDAO {
 	            ?, ?, ?, 
 	            ?, ?, ?, ?, 
 	            ?);*/
+	}
+	
+	public static Capisaldo createCapisaldo(Ricognizione ricognizione) {
+		Capisaldo capisaldo = new Capisaldo();
+		capisaldo.setId(ricognizione.getId());
+		capisaldo.setId_caposaldo_principale(ricognizione.getId_caposaldo_principale());
+		capisaldo.setId_in_altre_reti(ricognizione.getId_in_altre_reti());
+		capisaldo.setLatitude(ricognizione.getLatitude());
+		capisaldo.setLongitude(ricognizione.getLongitude());
+		capisaldo.setAltitude(ricognizione.getAltitude());
+		capisaldo.setAccuracy(ricognizione.getAccuracy());
+		capisaldo.setAccesso(ricognizione.getAccesso());
+		capisaldo.setIndirizzo(ricognizione.getIndirizzo());
+		capisaldo.setUbicazione(ricognizione.getUbicazione());
+		return capisaldo;
+	}
+	
+	public static Capisaldo getCapisaldoByID(String id) {
+		EntityManager entityManager = null;
+
+		try {
+			entityManager = DBHelper.instance().getEntityManager();
+			Capisaldo capisaldo = null;
+
+			Query q = entityManager.createQuery("SELECT e FROM capisaldo e WHERE id = :id");
+			q.setParameter("id", id);
+
+			@SuppressWarnings("unchecked")
+			List<Capisaldo> list = q.getResultList();
+			if(list.size() == 1)
+				capisaldo = list.get(0);
+
+			return capisaldo;
+		} finally {
+			DBHelper.closeEntityManager(entityManager);
+		}
+	}
+	
+	public static Capisaldo getCapisaldoByKey(String key) {
+		EntityManager entityManager = null;
+
+		try {
+			entityManager = DBHelper.instance().getEntityManager();
+			Capisaldo capisaldo = null;
+
+			Query q = entityManager.createQuery("SELECT e FROM capisaldo e WHERE kint = :key");
+			q.setParameter("key", key);
+
+			@SuppressWarnings("unchecked")
+			List<Capisaldo> list = q.getResultList();
+			if(list.size() == 1)
+				capisaldo = list.get(0);
+
+			return capisaldo;
+		} finally {
+			DBHelper.closeEntityManager(entityManager);
+		}
+	}
+	
+	public static void saveCapisaldo(Ricognizione r) {
+		
 	}
 }

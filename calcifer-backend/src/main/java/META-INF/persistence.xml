@@ -5,6 +5,7 @@
 	<persistence-unit name="calcifer-backend" transaction-type="RESOURCE_LOCAL">
 		<non-jta-data-source>java:jboss/datasources/PostgreSQLDS</non-jta-data-source>
 		<class>it.angelobabini.calcifer.backend.Utente</class>
+		<class>it.angelobabini.calcifer.stf.backend.data.Capisaldo</class>
 		<class>it.angelobabini.calcifer.stf.backend.data.Ricognizione</class>
 		<exclude-unlisted-classes>false</exclude-unlisted-classes>
 		<properties>

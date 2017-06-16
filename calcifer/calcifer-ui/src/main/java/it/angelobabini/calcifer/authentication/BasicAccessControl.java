@@ -27,12 +27,11 @@ public class BasicAccessControl implements AccessControl {
 
     @Override
     public boolean isUserInRole(String role) {
-        if ("admin".equalsIgnoreCase(role)) {
-            // Only the "admin" user is in the "admin" role
+    	Utente utente = UtenteDAO.readUtente(CurrentUser.get());
+    	String userRole = utente != null ? utente.getRole() : "";
+        if (userRole.equals(role)) {
             return true;
         }
-
-        // All users are in all non-admin roles
         return false;
     }
 

@@ -19,7 +19,9 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.Grid.SelectionMode;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
@@ -69,6 +71,14 @@ public class AdminUserView extends CssLayout implements View, CRUDLogic<Utente> 
 		addComponent(form);
 
 		editEntity(null);
+		
+		/*Utente nuovo = new Utente();
+		nuovo.setUsername("gabriele_bitelli");
+		nuovo.setName("Gabriele Bitelli");
+		nuovo.setPassword(Utente.encodePassword("gabrieleb"));
+		nuovo.setEmail("");
+		nuovo.setRole("USER");
+		new it.angelobabini.calcifer.backend.UtenteDAO().saveEntity(nuovo);*/
 	}
 
 	public HorizontalLayout createTopBar() {
@@ -113,7 +123,10 @@ public class AdminUserView extends CssLayout implements View, CRUDLogic<Utente> 
 					try {
 						utenteContainer.commit();
 					} catch (UnsupportedOperationException e) {
-						//TODO MainUI.get().notificateException("Errore cancellazione", e);
+						Notification n = new Notification("Errore commit: "+e.getClass()+" "+e.getMessage(), Type.ERROR_MESSAGE);
+	                    n.setDelayMsec(500);
+	                    n.show(getUI().getPage());
+	                    e.printStackTrace();
 					}
 					utenteContainer.refresh();
 				}
