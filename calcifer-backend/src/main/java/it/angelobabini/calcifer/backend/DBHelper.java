@@ -79,4 +79,10 @@ public class DBHelper implements ServletContextListener {
 
 		return ds.getConnection(); 
 	}
+	
+	public static void closeConnection(Connection conn) {
+		try {
+			conn.close();
+		} catch(Exception e) { }
+	}
 }

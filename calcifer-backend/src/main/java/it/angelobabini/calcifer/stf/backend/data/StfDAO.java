@@ -53,9 +53,11 @@ public class StfDAO {
 
 			@SuppressWarnings("unchecked")
 			List<Ricognizione> list = q.getResultList();
-			if(list.size() == 1)
+			if(list.size() == 1) {
 				ricognizione = list.get(0);
-
+				entityManager.detach(ricognizione);
+			}
+			
 			return ricognizione;
 		} finally {
 			DBHelper.closeEntityManager(entityManager);
@@ -63,7 +65,7 @@ public class StfDAO {
 	}
 
 	public static boolean insertRicognizione(Ricognizione ricognizione) {
-		EntityManager entityManager = null;
+		/*EntityManager entityManager = null;
 
 		try {
 			entityManager = DBHelper.instance().getEntityManager();
@@ -76,7 +78,8 @@ public class StfDAO {
 			return false;
 		} finally {
 			DBHelper.closeEntityManager(entityManager);
-		}
+		}*/
+		return saveRicognizione(ricognizione);
 	}
 
 	public static boolean saveRicognizione(Ricognizione ricognizione) {
@@ -90,7 +93,6 @@ public class StfDAO {
 			Capisaldo capisaldo = getCapisaldoByID(ricognizione.getId());
 			if(capisaldo == null) {
 				capisaldo = createCapisaldo(ricognizione);
-				entityManager.merge(capisaldo);
 			}
 			boolean found = false;
 			for(Ricognizione r : capisaldo.getRicognizioniList()) {
@@ -102,6 +104,7 @@ public class StfDAO {
 			if(!found) {
 				capisaldo.getRicognizioniList().add(ricognizione);
 			}
+			entityManager.merge(capisaldo);
 			
 			entityManager.getTransaction().commit();
 			return true;
@@ -211,9 +214,11 @@ public class StfDAO {
 
 			@SuppressWarnings("unchecked")
 			List<Capisaldo> list = q.getResultList();
-			if(list.size() == 1)
+			if(list.size() == 1) {
 				capisaldo = list.get(0);
-
+				entityManager.detach(capisaldo);
+			}
+			
 			return capisaldo;
 		} finally {
 			DBHelper.closeEntityManager(entityManager);
@@ -232,8 +237,10 @@ public class StfDAO {
 
 			@SuppressWarnings("unchecked")
 			List<Capisaldo> list = q.getResultList();
-			if(list.size() == 1)
+			if(list.size() == 1){
 				capisaldo = list.get(0);
+				entityManager.detach(capisaldo);
+			}
 
 			return capisaldo;
 		} finally {

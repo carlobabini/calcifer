@@ -23,6 +23,8 @@ import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import it.angelobabini.calcifer.backend.Setting;
+
 public class ExportImport {
 
 	public static final SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
@@ -493,6 +495,9 @@ public class ExportImport {
 	public static synchronized void exportXLSX(File fileXLSX) throws Exception {
 		SXSSFWorkbook workbook = null;
 		XSSFWorkbook _XSSFWorkbook = null;
+		
+		String baseUrl = Setting.getAsString("PHOTO_BASE_URL");
+		
 		try {
 			_XSSFWorkbook = new XSSFWorkbook();
 			workbook = new SXSSFWorkbook(_XSSFWorkbook, 2);
@@ -613,12 +618,19 @@ public class ExportImport {
 				row.createCell(POS_ALTITUDE_RIPRISTINO, CellType.NUMERIC).setCellValue(r.getAltitude_ripristino());
 				row.createCell(POS_ACCURACY_RIPRISTINO, CellType.NUMERIC).setCellValue(r.getAccuracy_ripristino());
 
-				hyperlinkCell(row, workbook, hlink_style, POS_IMAGEMANUFATTO, r.getFoto_manufatto(), "http://www.angelobabini.it/calcifer/capisaldo/"+r.getFoto_manufatto());
+				/*hyperlinkCell(row, workbook, hlink_style, POS_IMAGEMANUFATTO, r.getFoto_manufatto(), "http://www.angelobabini.it/calcifer/capisaldo/"+r.getFoto_manufatto());
 				hyperlinkCell(row, workbook, hlink_style, POS_IMAGEPANORAMICA, r.getFoto_panoramica(), "http://www.angelobabini.it/calcifer/capisaldo/"+r.getFoto_panoramica());
 				hyperlinkCell(row, workbook, hlink_style, POS_IMAGEAGGIORNATA, r.getFoto_aggiornata(), "http://www.angelobabini.it/calcifer/capisaldo/"+r.getFoto_aggiornata());
 				hyperlinkCell(row, workbook, hlink_style, POS_IMAGEDANNO_CONTRASSEGNO, r.getFoto_danno_contrassegno(), "http://www.angelobabini.it/calcifer/capisaldo/"+r.getFoto_danno_contrassegno());
 				hyperlinkCell(row, workbook, hlink_style, POS_IMAGEDANNO_MANUFATTO, r.getFoto_danno_manufatto(), "http://www.angelobabini.it/calcifer/capisaldo/"+r.getFoto_danno_manufatto());
-				hyperlinkCell(row, workbook, hlink_style, POS_IMAGESITO_RIPRISTINO, r.getFoto_sito_ripristino(), "http://www.angelobabini.it/calcifer/capisaldo/"+r.getFoto_sito_ripristino());
+				hyperlinkCell(row, workbook, hlink_style, POS_IMAGESITO_RIPRISTINO, r.getFoto_sito_ripristino(), "http://www.angelobabini.it/calcifer/capisaldo/"+r.getFoto_sito_ripristino());*/
+
+				hyperlinkCell(row, workbook, hlink_style, POS_IMAGEMANUFATTO, (r.getFoto_manufatto()!=null && r.getFoto_manufatto().length()>0 ? baseUrl : "") + r.getFoto_manufatto(), baseUrl + r.getFoto_manufatto());
+				hyperlinkCell(row, workbook, hlink_style, POS_IMAGEPANORAMICA, (r.getFoto_panoramica()!=null && r.getFoto_panoramica().length()>0 ? baseUrl : "") + r.getFoto_panoramica(), baseUrl + r.getFoto_panoramica());
+				hyperlinkCell(row, workbook, hlink_style, POS_IMAGEAGGIORNATA, (r.getFoto_aggiornata()!=null && r.getFoto_aggiornata().length()>0 ? baseUrl : "") + r.getFoto_aggiornata(), baseUrl + r.getFoto_aggiornata());
+				hyperlinkCell(row, workbook, hlink_style, POS_IMAGEDANNO_CONTRASSEGNO, (r.getFoto_danno_contrassegno()!=null && r.getFoto_danno_contrassegno().length()>0 ? baseUrl : "") + r.getFoto_danno_contrassegno(), baseUrl + r.getFoto_danno_contrassegno());
+				hyperlinkCell(row, workbook, hlink_style, POS_IMAGEDANNO_MANUFATTO, (r.getFoto_danno_manufatto()!=null && r.getFoto_danno_manufatto().length()>0 ? baseUrl : "") + r.getFoto_danno_manufatto(), baseUrl + r.getFoto_danno_manufatto());
+				hyperlinkCell(row, workbook, hlink_style, POS_IMAGESITO_RIPRISTINO, (r.getFoto_sito_ripristino()!=null && r.getFoto_sito_ripristino().length()>0 ? baseUrl : "") + r.getFoto_sito_ripristino(), baseUrl + r.getFoto_sito_ripristino());
 			}
 
 			FileOutputStream out = new FileOutputStream(fileXLSX);
