@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="stf-api-0.0.1-SNAPSHOT">
+        <wb-resource deploy-path="/" source-path="/target/m2e-wtp/web-resources"/>
+        <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
+        <dependent-module archiveName="calcifer-backend-1.0-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/calcifer-backend/calcifer-backend">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <property name="context-root" value="stf-api"/>
+        <property name="java-output-path" value="/stf-api/build/classes"/>
+    </wb-module>
+</project-modules>
