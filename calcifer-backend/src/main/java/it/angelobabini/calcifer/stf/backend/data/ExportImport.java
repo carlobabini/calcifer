@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -495,26 +496,26 @@ public class ExportImport {
 	public static synchronized void exportXLSX(File fileXLSX) throws Exception {
 		SXSSFWorkbook workbook = null;
 		XSSFWorkbook _XSSFWorkbook = null;
-		
+
 		String baseUrl = Setting.getAsString("PHOTO_BASE_URL");
-		
+
 		try {
 			_XSSFWorkbook = new XSSFWorkbook();
 			workbook = new SXSSFWorkbook(_XSSFWorkbook, 2);
 			SXSSFSheet sheet = workbook.createSheet(fileXLSX.getName().replaceAll(".xlsx", ""));
-			
+
 			DataFormat fmt = workbook.createDataFormat();
 			CellStyle text_style = workbook.createCellStyle();
 			text_style.setDataFormat(fmt.getFormat("@"));
 			sheet.setDefaultColumnStyle(3, text_style);
-			
+
 			CellStyle hlink_style = workbook.createCellStyle();
-	        Font hlink_font = workbook.createFont();
-	        hlink_font.setUnderline(Font.U_SINGLE);
-	        hlink_font.setColor(IndexedColors.BLUE.getIndex());
-	        hlink_style.setFont(hlink_font);
-	        
-	        CellStyle date_style = workbook.createCellStyle();
+			Font hlink_font = workbook.createFont();
+			hlink_font.setUnderline(Font.U_SINGLE);
+			hlink_font.setColor(IndexedColors.BLUE.getIndex());
+			hlink_style.setFont(hlink_font);
+
+			CellStyle date_style = workbook.createCellStyle();
 			date_style.setDataFormat(workbook.getCreationHelper().createDataFormat().getFormat("m/d/yy h:mm"));
 
 			SXSSFRow row = sheet.createRow(0);
@@ -652,7 +653,7 @@ public class ExportImport {
 			}
 		}
 	}
-	
+
 	public static synchronized void exportXLSX(File fileXLSX, List<Ricognizione> ricognizioni, String baseUrl, boolean urlInLink) throws Exception {
 		SXSSFWorkbook workbook = null;
 		XSSFWorkbook _XSSFWorkbook = null;
@@ -660,19 +661,19 @@ public class ExportImport {
 			_XSSFWorkbook = new XSSFWorkbook();
 			workbook = new SXSSFWorkbook(_XSSFWorkbook, 2);
 			SXSSFSheet sheet = workbook.createSheet(fileXLSX.getName().replaceAll(".xlsx", ""));
-			
+
 			DataFormat fmt = workbook.createDataFormat();
 			CellStyle text_style = workbook.createCellStyle();
 			text_style.setDataFormat(fmt.getFormat("@"));
 			sheet.setDefaultColumnStyle(3, text_style);
-			
+
 			CellStyle hlink_style = workbook.createCellStyle();
-	        Font hlink_font = workbook.createFont();
-	        hlink_font.setUnderline(Font.U_SINGLE);
-	        hlink_font.setColor(IndexedColors.BLUE.getIndex());
-	        hlink_style.setFont(hlink_font);
-	        
-	        CellStyle date_style = workbook.createCellStyle();
+			Font hlink_font = workbook.createFont();
+			hlink_font.setUnderline(Font.U_SINGLE);
+			hlink_font.setColor(IndexedColors.BLUE.getIndex());
+			hlink_style.setFont(hlink_font);
+
+			CellStyle date_style = workbook.createCellStyle();
 			date_style.setDataFormat(workbook.getCreationHelper().createDataFormat().getFormat("m/d/yy h:mm"));
 
 			SXSSFRow row = sheet.createRow(0);
@@ -801,29 +802,257 @@ public class ExportImport {
 			}
 		}
 	}
-	
+
 	private static Cell dateCell(SXSSFRow row, SXSSFWorkbook workbook, CellStyle style, int pos, Date date) {
 		if(date != null) {
 			Cell cell = row.createCell(pos, CellType.NUMERIC);
 			cell.setCellValue(date);
-	        cell.setCellStyle(style);
-	        return cell;
+			cell.setCellStyle(style);
+			return cell;
 		} else {
 			return null;
 		}
 	}
-	
+
 	private static Cell hyperlinkCell(SXSSFRow row, SXSSFWorkbook workbook, CellStyle style, int pos, String text, String url) {
 		if(text != null && text.length() > 0) {
 			Cell cell = row.createCell(pos, CellType.STRING);
 			cell.setCellValue(text);
 			Hyperlink link = workbook.getCreationHelper().createHyperlink(HyperlinkType.URL);
-	        link.setAddress(url);
-	        cell.setHyperlink(link);
-	        cell.setCellStyle(style);
-	        return cell;
+			link.setAddress(url);
+			cell.setHyperlink(link);
+			cell.setCellStyle(style);
+			return cell;
 		} else {
 			return null;
+		}
+	}
+
+	public static synchronized List<String> exportExcel(File fileXLSX, List<Ricognizione> ricognizioniList, 
+			boolean datiRicognizioniPrecedenti, boolean fotoRicognizioniPrecedenti, String baseUrl, boolean urlInLink) throws Exception {
+		SXSSFWorkbook workbook = null;
+		XSSFWorkbook _XSSFWorkbook = null;
+		List<String> immaginiList = new ArrayList<String>();
+
+		try {
+			_XSSFWorkbook = new XSSFWorkbook();
+			workbook = new SXSSFWorkbook(_XSSFWorkbook, 2);
+			SXSSFSheet sheet = workbook.createSheet(fileXLSX.getName().replaceAll(".xlsx", ""));
+
+			DataFormat fmt = workbook.createDataFormat();
+			CellStyle text_style = workbook.createCellStyle();
+			text_style.setDataFormat(fmt.getFormat("@"));
+			sheet.setDefaultColumnStyle(3, text_style);
+
+			CellStyle hlink_style = workbook.createCellStyle();
+			Font hlink_font = workbook.createFont();
+			hlink_font.setUnderline(Font.U_SINGLE);
+			hlink_font.setColor(IndexedColors.BLUE.getIndex());
+			hlink_style.setFont(hlink_font);
+
+			CellStyle date_style = workbook.createCellStyle();
+			date_style.setDataFormat(workbook.getCreationHelper().createDataFormat().getFormat("m/d/yy h:mm"));
+
+			SXSSFRow row = sheet.createRow(0);
+			row.createCell(POS_INIZIO, CellType.STRING).setCellValue("Inizio");
+			row.createCell(POS_FINE, CellType.STRING).setCellValue("Fine");
+			row.createCell(POS_OPERATORE, CellType.STRING).setCellValue("Operatore");
+			row.createCell(POS_ID, CellType.STRING).setCellValue("Id");
+			row.createCell(POS_ID_IN_ALTRE_RETI, CellType.STRING).setCellValue("Id_In_Altre_Reti");
+			row.createCell(POS_ID_CAPOSALDO_PRINCIPALE, CellType.STRING).setCellValue("Id_Caposaldo_Principale");
+			row.createCell(POS_LATITUDE, CellType.STRING).setCellValue("Latitude");
+			row.createCell(POS_LONGITUDE, CellType.STRING).setCellValue("Longitude");
+			row.createCell(POS_ALTITUDE, CellType.STRING).setCellValue("Altitude");
+			row.createCell(POS_ACCURACY, CellType.STRING).setCellValue("Accuracy");
+			row.createCell(POS_UBICAZIONE, CellType.STRING).setCellValue("Ubicazione");
+			row.createCell(POS_INDIRIZZO, CellType.STRING).setCellValue("Indirizzo");
+			row.createCell(POS_ACCESSO, CellType.STRING).setCellValue("Accesso");
+			row.createCell(POS_POSIZIONE_CONTRASSEGNO, CellType.STRING).setCellValue("Posizione_Contrassegno");
+			row.createCell(POS_MATERIALIZZAZIONE, CellType.STRING).setCellValue("Materializzazione");
+			row.createCell(POS_CONTRASSEGNO_ANCORATO, CellType.STRING).setCellValue("Contrassegno_Ancorato");
+			row.createCell(POS_CONTRASSEGNO_DANNEGGIATO, CellType.STRING).setCellValue("Contrassegno_Danneggiato");
+			row.createCell(POS_DESCRIZIONE_DANNEGGIAMENTO, CellType.STRING).setCellValue("Descrizione_Danneggiamento");
+			row.createCell(POS_TIPOLOGIA_FONDAZIONE, CellType.STRING).setCellValue("Tipologia_Fondazione");
+			row.createCell(POS_ANOMALIE_MANUFATTO, CellType.STRING).setCellValue("Anomalie_Manufatto");
+			row.createCell(POS_DESCRIZIONE_ANOMALIE, CellType.STRING).setCellValue("Descrizione_Anomalie");
+			row.createCell(POS_NOTE_RILEVANTI, CellType.STRING).setCellValue("Note_Rilevanti");
+			row.createCell(POS_DESCR_NOTE_RILEVANTI, CellType.STRING).setCellValue("Descr_Note_Rilevanti");
+			row.createCell(POS_ALTRE_NOTE_RILEVANTI, CellType.STRING).setCellValue("Altre_Note_Rilevanti");
+			row.createCell(POS_TIPO_CONTESTO_AMBIENTALE, CellType.STRING).setCellValue("Tipo_Contesto_Ambientale");
+			row.createCell(POS_ALTRO_TIPO_CONTESTO_AMBIENTALE, CellType.STRING).setCellValue("Altro_Tipo_Contesto_Ambientale");
+			row.createCell(POS_INSTANCEID, CellType.STRING).setCellValue("Instanceid");
+			row.createCell(POS_MODIFICA, CellType.STRING).setCellValue("Modifica");
+			row.createCell(POS_APPARTENENZA, CellType.STRING).setCellValue("Appartenenza");
+			row.createCell(POS_AFFIDABILITA, CellType.STRING).setCellValue("Affidabilita");
+			row.createCell(POS_ESISTENTE, CellType.STRING).setCellValue("Esistente");
+			row.createCell(POS_STATO_SCOMPARSO, CellType.STRING).setCellValue("Stato_Scomparso");
+			row.createCell(POS_NOTE_SCOMPARSO, CellType.STRING).setCellValue("Note_Scomparso");
+			row.createCell(POS_ALTRE_SCOMPARSO, CellType.STRING).setCellValue("Altre_Scomparso");
+			row.createCell(POS_NECESSITA_RIPRISTINO, CellType.STRING).setCellValue("Necessita_Ripristino");
+			row.createCell(POS_DESCRIZIONE_RIPRISTINO, CellType.STRING).setCellValue("Descrizione_Ripristino");
+			row.createCell(POS_LATITUDE_RIPRISTINO, CellType.STRING).setCellValue("Latitude_Ripristino");
+			row.createCell(POS_LONGITUDE_RIPRISTINO, CellType.STRING).setCellValue("Longitude_Ripristino");
+			row.createCell(POS_ALTITUDE_RIPRISTINO, CellType.STRING).setCellValue("Altitude_Ripristino");
+			row.createCell(POS_ACCURACY_RIPRISTINO, CellType.STRING).setCellValue("Accuracy_Ripristino");
+			row.createCell(POS_IMAGEMANUFATTO, CellType.STRING).setCellValue("Image Manufatto");
+			row.createCell(POS_IMAGEPANORAMICA, CellType.STRING).setCellValue("Image Panoramica");
+			row.createCell(POS_IMAGEAGGIORNATA, CellType.STRING).setCellValue("Image Aggiornata");
+			row.createCell(POS_IMAGEDANNO_CONTRASSEGNO, CellType.STRING).setCellValue("imageDanno_Contrassegno");
+			row.createCell(POS_IMAGEDANNO_MANUFATTO, CellType.STRING).setCellValue("imageDanno_Manufatto");
+			row.createCell(POS_IMAGESITO_RIPRISTINO, CellType.STRING).setCellValue("imageSito_Ripristino");
+
+			int i = 1;
+			for(Ricognizione r : ricognizioniList) {
+				row = sheet.createRow(i);
+				i++;
+
+				if(datiRicognizioniPrecedenti || fotoRicognizioniPrecedenti) {
+					//Utilizzo un altro oggetto per non modificare quello che mi è stato passato
+					r = StfDAO.getRicognizione(r.getInstanceID());
+					//Leggo tutte le ricognizioni precedenti sullo stesso capisaldo
+					List<Ricognizione> altre = StfDAO.getRicognizioneByID(r.getId());
+					for(Ricognizione prec : altre) {
+						//Solo le ricognizioni precedenti
+						if(prec.getInizio().before(r.getInizio())) {
+							if(datiRicognizioniPrecedenti) {
+								//Dati ricognizioni
+								if(r.getId_caposaldo_principale()==null || r.getId_caposaldo_principale().length()==0)
+									r.setId_caposaldo_principale(prec.getId_caposaldo_principale());
+								if(r.getId_in_altre_reti()==null || r.getId_in_altre_reti().length()==0)
+									r.setId_in_altre_reti(prec.getId_in_altre_reti());
+								if(r.getUbicazione()==null || r.getUbicazione().length()==0)
+									r.setUbicazione(prec.getUbicazione());
+								if(r.getIndirizzo()==null || r.getIndirizzo().length()==0)
+									r.setIndirizzo(prec.getIndirizzo());
+								if(r.getAccesso()==null || r.getAccesso().length()==0)
+									r.setAccesso(prec.getAccesso());
+								if(r.getPosizione_contrassegno()==null || r.getPosizione_contrassegno().length()==0)
+									r.setPosizione_contrassegno(prec.getPosizione_contrassegno());
+								if(r.getMaterializzazione()==null || r.getMaterializzazione().length()==0)
+									r.setMaterializzazione(prec.getMaterializzazione());
+								if(r.getContrassegno_ancorato()==null || r.getContrassegno_ancorato().length()==0)
+									r.setContrassegno_ancorato(prec.getContrassegno_ancorato());
+								if(r.getContrassegno_danneggiato()==null || r.getContrassegno_danneggiato().length()==0)
+									r.setContrassegno_danneggiato(prec.getContrassegno_danneggiato());
+								if(r.getDescrizione_danneggiamento()==null || r.getDescrizione_danneggiamento().length()==0)
+									r.setDescrizione_danneggiamento(prec.getDescrizione_danneggiamento());
+								if(r.getTipologia_fondazione()==null || r.getTipologia_fondazione().length()==0)
+									r.setTipologia_fondazione(prec.getTipologia_fondazione());
+								if(r.getAnomalie_manufatto()==null || r.getAnomalie_manufatto().length()==0)
+									r.setAnomalie_manufatto(prec.getAnomalie_manufatto());
+								if(r.getDescrizione_anomalie()==null || r.getDescrizione_anomalie().length()==0)
+									r.setDescrizione_anomalie(prec.getDescrizione_anomalie());
+								if(r.getNote_rilevanti()==null || r.getNote_rilevanti().length()==0)
+									r.setNote_rilevanti(prec.getNote_rilevanti());
+								if(r.getDescr_note_rilevanti()==null || r.getDescr_note_rilevanti().length()==0)
+									r.setDescr_note_rilevanti(prec.getDescr_note_rilevanti());
+								if(r.getAltre_note_rilevanti()==null || r.getAltre_note_rilevanti().length()==0)
+									r.setAltre_note_rilevanti(prec.getAltre_note_rilevanti());
+								if(r.getTipo_contesto_ambientale()==null || r.getTipo_contesto_ambientale().length()==0)
+									r.setTipo_contesto_ambientale(prec.getTipo_contesto_ambientale());
+								if(r.getAltro_tipo_contesto_ambientale()==null || r.getAltro_tipo_contesto_ambientale().length()==0)
+									r.setAltro_tipo_contesto_ambientale(prec.getAltro_tipo_contesto_ambientale());
+							}
+							if(fotoRicognizioniPrecedenti) {
+								//Immagini ricognizioni precedenti
+								if(r.getFoto_manufatto()==null || r.getFoto_manufatto().length()==0)
+									r.setFoto_manufatto(prec.getFoto_manufatto());
+								if(r.getFoto_panoramica()==null || r.getFoto_panoramica().length()==0)
+									r.setFoto_panoramica(prec.getFoto_panoramica());
+								if(r.getFoto_danno_contrassegno()==null || r.getFoto_danno_contrassegno().length()==0)
+									r.setFoto_danno_contrassegno(prec.getFoto_danno_contrassegno());
+								if(r.getFoto_danno_manufatto()==null || r.getFoto_danno_manufatto().length()==0)
+									r.setFoto_danno_manufatto(prec.getFoto_danno_manufatto());
+								if(r.getFoto_aggiornata()==null || r.getFoto_aggiornata().length()==0)
+									r.setFoto_aggiornata(prec.getFoto_aggiornata());
+								if(r.getFoto_sito_ripristino()==null || r.getFoto_sito_ripristino().length()==0)
+									r.setFoto_sito_ripristino(prec.getFoto_sito_ripristino());
+							}
+						}
+					}
+				}
+
+				dateCell(row, workbook, date_style, POS_INIZIO, r.getInizio());
+				dateCell(row, workbook, date_style, POS_FINE, r.getFine());
+				row.createCell(POS_OPERATORE, CellType.STRING).setCellValue(r.getOperatore());
+				row.createCell(POS_ID, CellType.STRING).setCellValue(r.getId());
+				row.getCell(POS_ID).setCellType(CellType.STRING);
+				row.getCell(POS_ID).setCellStyle(text_style);
+				row.createCell(POS_ID_IN_ALTRE_RETI, CellType.STRING).setCellValue(r.getId_in_altre_reti());
+				row.getCell(POS_ID_IN_ALTRE_RETI).setCellType(CellType.STRING);
+				row.getCell(POS_ID_IN_ALTRE_RETI).setCellStyle(text_style);
+				row.createCell(POS_ID_CAPOSALDO_PRINCIPALE, CellType.STRING).setCellValue(r.getId_caposaldo_principale());
+				row.getCell(POS_ID_CAPOSALDO_PRINCIPALE).setCellType(CellType.STRING);
+				row.getCell(POS_ID_CAPOSALDO_PRINCIPALE).setCellStyle(text_style);
+				row.createCell(POS_LATITUDE, CellType.NUMERIC).setCellValue(r.getLatitude());
+				row.createCell(POS_LONGITUDE, CellType.NUMERIC).setCellValue(r.getLongitude());
+				row.createCell(POS_ALTITUDE, CellType.NUMERIC).setCellValue(r.getAltitude());
+				row.createCell(POS_ACCURACY, CellType.NUMERIC).setCellValue(r.getAccuracy());
+				row.createCell(POS_UBICAZIONE, CellType.STRING).setCellValue(r.getUbicazione());
+				row.createCell(POS_INDIRIZZO, CellType.STRING).setCellValue(r.getIndirizzo());
+				row.createCell(POS_ACCESSO, CellType.STRING).setCellValue(r.getAccesso());
+				row.createCell(POS_POSIZIONE_CONTRASSEGNO, CellType.STRING).setCellValue(r.getPosizione_contrassegno());
+				row.createCell(POS_MATERIALIZZAZIONE, CellType.STRING).setCellValue(r.getMaterializzazione());
+				row.createCell(POS_CONTRASSEGNO_ANCORATO, CellType.STRING).setCellValue(r.getContrassegno_ancorato());
+				row.createCell(POS_CONTRASSEGNO_DANNEGGIATO, CellType.STRING).setCellValue(r.getContrassegno_danneggiato());
+				row.createCell(POS_DESCRIZIONE_DANNEGGIAMENTO, CellType.STRING).setCellValue(r.getDescrizione_danneggiamento());
+				row.createCell(POS_TIPOLOGIA_FONDAZIONE, CellType.STRING).setCellValue(r.getTipologia_fondazione());
+				row.createCell(POS_ANOMALIE_MANUFATTO, CellType.STRING).setCellValue(r.getAnomalie_manufatto());
+				row.createCell(POS_DESCRIZIONE_ANOMALIE, CellType.STRING).setCellValue(r.getDescrizione_anomalie());
+				row.createCell(POS_NOTE_RILEVANTI, CellType.STRING).setCellValue(r.getNote_rilevanti());
+				row.createCell(POS_DESCR_NOTE_RILEVANTI, CellType.STRING).setCellValue(r.getDescr_note_rilevanti());
+				row.createCell(POS_ALTRE_NOTE_RILEVANTI, CellType.STRING).setCellValue(r.getAltre_note_rilevanti());
+				row.createCell(POS_TIPO_CONTESTO_AMBIENTALE, CellType.STRING).setCellValue(r.getTipo_contesto_ambientale());
+				row.createCell(POS_ALTRO_TIPO_CONTESTO_AMBIENTALE, CellType.STRING).setCellValue(r.getAltro_tipo_contesto_ambientale());
+				row.createCell(POS_INSTANCEID, CellType.STRING).setCellValue(r.getInstanceID());
+				dateCell(row, workbook, date_style, POS_MODIFICA, r.getModifica());
+				row.createCell(POS_APPARTENENZA, CellType.STRING).setCellValue(r.getAppartenenza());
+				row.createCell(POS_AFFIDABILITA, CellType.NUMERIC).setCellValue(r.getAffidabilita());
+				row.createCell(POS_ESISTENTE, CellType.STRING).setCellValue(r.getEsistente());
+				row.createCell(POS_STATO_SCOMPARSO, CellType.STRING).setCellValue(r.getStato_scomparso());
+				row.createCell(POS_NOTE_SCOMPARSO, CellType.STRING).setCellValue(r.getNote_scomparso());
+				row.createCell(POS_ALTRE_SCOMPARSO, CellType.STRING).setCellValue(r.getAltre_scomparso());
+				row.createCell(POS_NECESSITA_RIPRISTINO, CellType.STRING).setCellValue(r.getNecessita_ripristino());
+				row.createCell(POS_DESCRIZIONE_RIPRISTINO, CellType.STRING).setCellValue(r.getDescrizione_ripristino());
+				row.createCell(POS_LATITUDE_RIPRISTINO, CellType.NUMERIC).setCellValue(r.getLatitude_ripristino());
+				row.createCell(POS_LONGITUDE_RIPRISTINO, CellType.NUMERIC).setCellValue(r.getLongitude_ripristino());
+				row.createCell(POS_ALTITUDE_RIPRISTINO, CellType.NUMERIC).setCellValue(r.getAltitude_ripristino());
+				row.createCell(POS_ACCURACY_RIPRISTINO, CellType.NUMERIC).setCellValue(r.getAccuracy_ripristino());
+
+				hyperlinkCell(row, workbook, hlink_style, POS_IMAGEMANUFATTO, (r.getFoto_manufatto()!=null && r.getFoto_manufatto().length()>0 ? (urlInLink ? baseUrl : "") : "") + r.getFoto_manufatto(), baseUrl + r.getFoto_manufatto());
+				hyperlinkCell(row, workbook, hlink_style, POS_IMAGEPANORAMICA, (r.getFoto_panoramica()!=null && r.getFoto_panoramica().length()>0 ? (urlInLink ? baseUrl : "") : "") + r.getFoto_panoramica(), baseUrl + r.getFoto_panoramica());
+				hyperlinkCell(row, workbook, hlink_style, POS_IMAGEAGGIORNATA, (r.getFoto_aggiornata()!=null && r.getFoto_aggiornata().length()>0 ? (urlInLink ? baseUrl : "") : "") + r.getFoto_aggiornata(), baseUrl + r.getFoto_aggiornata());
+				hyperlinkCell(row, workbook, hlink_style, POS_IMAGEDANNO_CONTRASSEGNO, (r.getFoto_danno_contrassegno()!=null && r.getFoto_danno_contrassegno().length()>0 ? (urlInLink ? baseUrl : "") : "") + r.getFoto_danno_contrassegno(), baseUrl + r.getFoto_danno_contrassegno());
+				hyperlinkCell(row, workbook, hlink_style, POS_IMAGEDANNO_MANUFATTO, (r.getFoto_danno_manufatto()!=null && r.getFoto_danno_manufatto().length()>0 ? (urlInLink ? baseUrl : "") : "") + r.getFoto_danno_manufatto(), baseUrl + r.getFoto_danno_manufatto());
+				hyperlinkCell(row, workbook, hlink_style, POS_IMAGESITO_RIPRISTINO, (r.getFoto_sito_ripristino()!=null && r.getFoto_sito_ripristino().length()>0 ? (urlInLink ? baseUrl : "") : "") + r.getFoto_sito_ripristino(), baseUrl + r.getFoto_sito_ripristino());
+				
+				if(r.getFoto_manufatto()!=null && r.getFoto_manufatto().length()>0)
+					immaginiList.add(r.getFoto_manufatto());
+				if(r.getFoto_panoramica()!=null && r.getFoto_panoramica().length()>0)
+					immaginiList.add(r.getFoto_panoramica());
+				if(r.getFoto_danno_contrassegno()!=null && r.getFoto_danno_contrassegno().length()>0)
+					immaginiList.add(r.getFoto_danno_contrassegno());
+				if(r.getFoto_danno_manufatto()!=null && r.getFoto_danno_manufatto().length()>0)
+					immaginiList.add(r.getFoto_danno_manufatto());
+				if(r.getFoto_aggiornata()!=null && r.getFoto_aggiornata().length()>0)
+					immaginiList.add(r.getFoto_aggiornata());
+				if(r.getFoto_sito_ripristino()!=null && r.getFoto_sito_ripristino().length()>0)
+					immaginiList.add(r.getFoto_sito_ripristino());
+			}
+
+			FileOutputStream out = new FileOutputStream(fileXLSX);
+			workbook.write(out);
+			out.close();
+
+			return immaginiList;
+		} catch(Exception e) {
+			throw e;
+		} finally {
+			try {
+				workbook.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 }

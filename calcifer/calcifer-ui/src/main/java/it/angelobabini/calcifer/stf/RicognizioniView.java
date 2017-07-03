@@ -5,7 +5,6 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.Date;
 
 import com.vaadin.addon.jpacontainer.EntityItem;
 import com.vaadin.addon.jpacontainer.JPAContainer;
@@ -28,9 +27,6 @@ import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.Upload;
 import com.vaadin.ui.themes.ValoTheme;
 
-import it.angelobabini.calcifer.AdvancedFileDownloader;
-import it.angelobabini.calcifer.AdvancedFileDownloader.AdvancedDownloaderListener;
-import it.angelobabini.calcifer.AdvancedFileDownloader.DownloaderEvent;
 import it.angelobabini.calcifer.CalciferUI;
 import it.angelobabini.calcifer.authentication.CurrentUser;
 import it.angelobabini.calcifer.stf.backend.data.ExportImport;
@@ -41,9 +37,8 @@ public class RicognizioniView extends CssLayout implements View {
 
 	public static final String VIEW_NAME = "Ricognizioni";
 	private Button refreshButton = new Button();
-	private Button exportExcelButton = new Button("Esporta");
-	private final AdvancedFileDownloader downloader = new AdvancedFileDownloader();
 	private Button importExcelButton = new Button("Importa");
+	private Button exportButton = new Button("Esporta Excel ed Immagini");
 	private final RicognizioneGrid grid = new RicognizioneGrid(this);
 	private final RicognizioneForm form = new RicognizioneForm(this);
 
@@ -88,27 +83,24 @@ public class RicognizioniView extends CssLayout implements View {
 				grid.getContainer().refresh();
 			}
 		});
-		
-		exportExcelButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-		exportExcelButton.setIcon(FontAwesome.FILE_EXCEL_O);
-		downloader.addAdvancedDownloaderListener(new AdvancedDownloaderListener() {
-            @Override
-            public void beforeDownload(DownloaderEvent downloadEvent) {
-            	downloader.setFilePath("");
-            	try {
-            		File f = exportExcel();
-            		if(f != null) {
-            			downloader.setFilePath(f.getAbsolutePath());
-            		}
-            	} catch (Exception e) {
-            		Notification n = new Notification("Errore esportazione", Type.ERROR_MESSAGE);
-            		n.setDelayMsec(500);
-            		n.show(getUI().getPage());
-            		e.printStackTrace();
-            	}
-            }
+
+		exportButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+		exportButton.setIcon(FontAwesome.FILE_EXCEL_O);
+		exportButton.addClickListener(new ClickListener() {
+			private static final long serialVersionUID = -9196145233400929398L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				try {
+					exportExcelAndImages();
+				} catch (Exception e) {
+					Notification n = new Notification("Errore esportazione", Type.ERROR_MESSAGE);
+					n.setDelayMsec(500);
+					n.show(getUI().getPage());
+					e.printStackTrace();
+				}
+			}
 		});
-		downloader.extend(exportExcelButton);
 		
 		importExcelButton.setIcon(FontAwesome.FILE_EXCEL_O);
 		importExcelButton.addClickListener(new ClickListener() {
@@ -131,11 +123,11 @@ public class RicognizioniView extends CssLayout implements View {
 		topLayout.setSpacing(true);
 		topLayout.setWidth(100, Unit.PERCENTAGE);
 		topLayout.addComponent(refreshButton);
-		topLayout.addComponent(exportExcelButton);
+		topLayout.addComponent(exportButton);
 		topLayout.addComponent(importExcelButton);
-		topLayout.setComponentAlignment(exportExcelButton, Alignment.MIDDLE_RIGHT);
+		topLayout.setComponentAlignment(exportButton, Alignment.MIDDLE_RIGHT);
 		topLayout.setComponentAlignment(refreshButton, Alignment.MIDDLE_LEFT);
-		topLayout.setExpandRatio(exportExcelButton, 1);
+		topLayout.setExpandRatio(exportButton, 1);
 		topLayout.setExpandRatio(refreshButton, 2);
 		topLayout.setStyleName("top-bar");
 
@@ -190,17 +182,6 @@ public class RicognizioniView extends CssLayout implements View {
 			e.printStackTrace();
 		}
 		editRicognizione(null);
-	}
-	
-	private File exportExcel() throws Exception {
-		File dummyFile = File.createTempFile("temp", ".xlsx");
-		final File tempFile = new File(dummyFile.getParent(), ExportImport.dateFormatterID.format(new Date())+"_Ricognizioni.xlsx");
-		tempFile.deleteOnExit();
-		dummyFile.delete();
-		dummyFile.deleteOnExit();
-		
-		ExportImport.exportXLSX(tempFile);
-		return tempFile;
 	}
 
 	private void importExcel() throws Exception {
@@ -258,6 +239,18 @@ public class RicognizioniView extends CssLayout implements View {
         subWindow.setClosable(true);
         subWindow.center();
 		subWindow.setContent(layout);
-        CalciferUI.get().addWindow(subWindow);	
+        CalciferUI.get().addWindow(subWindow);
+	}
+	
+	private void exportExcelAndImages() {
+		final Window subWindow = new Window("Opzioni esportazione file");
+		final RicognizioniDownloader ricognizioneDownloader = new RicognizioniDownloader(this);
+		
+		subWindow.setModal(true);
+        subWindow.setClosable(true);
+        subWindow.setResizable(false);
+        subWindow.center();
+		subWindow.setContent(ricognizioneDownloader);
+        CalciferUI.get().addWindow(subWindow);
 	}
 }

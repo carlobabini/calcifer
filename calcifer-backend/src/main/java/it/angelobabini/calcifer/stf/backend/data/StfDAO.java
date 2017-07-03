@@ -4,6 +4,7 @@ import it.angelobabini.calcifer.backend.DBHelper;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -64,6 +65,22 @@ public class StfDAO {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	public static List<Ricognizione> getRicognizioneByID(String id) {
+		EntityManager entityManager = null;
+
+		try {
+			entityManager = DBHelper.instance().getEntityManager();
+
+			Query q = entityManager.createQuery("SELECT e FROM ricognizioni e WHERE id = :id order by inizio desc", Ricognizione.class);
+			q.setParameter("id", id);
+
+			return q.getResultList();
+		} finally {
+			DBHelper.closeEntityManager(entityManager);
+		}
+	}
+
 	public static boolean insertRicognizione(Ricognizione ricognizione) {
 		/*EntityManager entityManager = null;
 
@@ -90,7 +107,7 @@ public class StfDAO {
 			entityManager.getTransaction().begin();
 			if(!entityManager.contains(ricognizione))
 				entityManager.merge(ricognizione);
-			Capisaldo capisaldo = getCapisaldoByID(ricognizione.getId());
+			/*Capisaldo capisaldo = getCapisaldoByID(ricognizione.getId());
 			if(capisaldo == null) {
 				capisaldo = createCapisaldo(ricognizione);
 			}
@@ -104,7 +121,7 @@ public class StfDAO {
 			if(!found) {
 				capisaldo.getRicognizioniList().add(ricognizione);
 			}
-			entityManager.merge(capisaldo);
+			entityManager.merge(capisaldo);*/
 			
 			entityManager.getTransaction().commit();
 			return true;
@@ -250,5 +267,20 @@ public class StfDAO {
 	
 	public static void saveCapisaldo(Ricognizione r) {
 		
+	}
+	
+	public static int quickUpdate(String sql) throws Exception {
+		Connection conn = null;
+		Statement statement = null;
+		try {
+			conn = DBHelper.getConnection();
+			statement = conn.createStatement();
+			return statement.executeUpdate(sql);
+		} finally {
+			try {
+				statement.close();
+			} catch(Exception e) {}
+			DBHelper.closeConnection(conn);
+		}
 	}
 }

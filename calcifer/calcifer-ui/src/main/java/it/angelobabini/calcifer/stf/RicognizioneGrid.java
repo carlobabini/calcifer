@@ -76,6 +76,7 @@ public class RicognizioneGrid extends Grid {
 		);
 		
 		getColumn("inizio").setHeaderCaption("Inizio").setHidable(false);
+		filter.setDateFilter("inizio");
 		
 		getColumn("fine").setHeaderCaption("Fine");
 		

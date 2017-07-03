@@ -104,23 +104,6 @@ public class RicognizioniREST {
 	}
 	
 	@GET
-	@Path("/checkRicognizioneImages")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response checkRicognizioneImages() {
-		StringBuilder result = new StringBuilder();
-		List<String> ids = StfDAO.getRicognzioneUUIDs();
-		for(String id : ids) {
-			Ricognizione r = StfDAO.getRicognizione(id);
-			try {
-				result.append(ImageManager.checkImages(r));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		return Response.status(HttpStatus.SC_OK).entity(result.toString()).build();
-	}
-	
-	@GET
 	@Path("/exportFull2017")
 	//@Produces("application/zip")
 	@Produces("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
@@ -250,6 +233,50 @@ public class RicognizioniREST {
 			File xlsxFile = File.createTempFile("exportGoogleMaps_", ".xlsx");
 			ExportImport.exportXLSX(xlsxFile, ricognizioniList, Setting.getAsString("PHOTO_BASE_URL"), true);
 			return Response.status(HttpStatus.SC_OK).entity(xlsxFile).build();
+		} catch(Exception e) {
+			return Response.status(HttpStatus.SC_INTERNAL_SERVER_ERROR).entity(e.getClass()+" "+e.getMessage()).build();
+		}
+	}
+	
+	@GET
+	@Path("/checkRicognizioneImages")
+	@Produces(MediaType.TEXT_PLAIN)
+	public Response checkRicognizioneImages() {
+		StringBuilder result = new StringBuilder();
+		List<String> ids = StfDAO.getRicognzioneUUIDs();
+		for(String id : ids) {
+			Ricognizione r = StfDAO.getRicognizione(id);
+			try {
+				result.append(ImageManager.checkImages(r));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return Response.status(HttpStatus.SC_OK).entity(result.toString()).build();
+	}
+	
+	@GET
+	@Path("/fixPhotoNames")
+	@Produces(MediaType.TEXT_PLAIN)
+	public Response fixPhotoNames () {
+		try {
+			String result = "";
+			List<String> ids = StfDAO.getRicognzioneUUIDs();
+			for(String id : ids) {
+				Ricognizione r = StfDAO.getRicognizione(id);
+				try {
+					List<String> slist = ImageManager.checkRemoteImages(r);
+					if(slist != null && slist.size() > 0) {
+						result += r.getId() + "\n";
+						for(String s : slist) {
+							result += "\t" + s + "\n";
+						}
+					}
+				} catch(Exception e) {
+					result += r.getId() + ": "+e.getClass() + " " + e.getMessage();
+				}
+			}
+			return Response.status(HttpStatus.SC_OK).entity(result).build();
 		} catch(Exception e) {
 			return Response.status(HttpStatus.SC_INTERNAL_SERVER_ERROR).entity(e.getClass()+" "+e.getMessage()).build();
 		}

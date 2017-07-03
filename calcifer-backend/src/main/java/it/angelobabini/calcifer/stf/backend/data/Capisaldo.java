@@ -53,7 +53,7 @@ public class Capisaldo implements Serializable {
 	@Column(name = "accesso", length = 250, nullable = false)
 	private String accesso; //accesso
 	
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@OneToMany(fetch = FetchType.LAZY)
 	@OrderBy("inizio ASC")
 	private List<Ricognizione> ricognizioniList;
 	
